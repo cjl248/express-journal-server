@@ -62,16 +62,20 @@ class JournalController {
   }
 
   static async updateEntry(req, res) {
-    const { id, title, content } = req.params
+    const { id } = req.params
+    const alteredEntry  = req.body
     if (!Number(id)) {
       util.setError(400, 'Please input a valid numeric value');
       return util.send(res);
     }
+    if (!req.body.title || !req.body.content) {
+      util.setError(400, 'Please include information to update')
+      return util.send(res)
+    }
     try {
-      const entryToUpdate = await JournalService.getAnEntry(id)
-      entryToUpdate['title'] = title
-      entryToUpdate['content'] = content
-      const updatedEntry = await JournalService.updateEntry(id, entryToUpdate)
+      const count = req.body.content.split('').length
+      alteredEntry['count'] = count
+      const updatedEntry = await JournalService.updateEntry(id, alteredEntry)
       if (!updatedEntry) {
         util.setError(404, `Cannot find Entry with id ${id}`)
       } else {
