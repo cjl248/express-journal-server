@@ -16,7 +16,7 @@ class JournalController {
         util.setSuccess(200, 'No entries found')
       }
       return util.send(res)
-    } catch (e) {
+    } catch(e) {
       util.setError(400, e.message)
       return util.send(res)
     }
@@ -33,7 +33,7 @@ class JournalController {
       if (!theEntry) {
         util.setError(404, `Cannot find the entry with the id ${id}`)
       } else {
-        util.setSuccess(200, 'Found Entry', theEntry)
+        util.setSuccess(200, 'Found entry', theEntry)
       }
       return util.send(res)
     } catch(e) {
@@ -56,8 +56,8 @@ class JournalController {
       util.setSuccess(201, 'Entry added', createdEntry)
       return util.send(res)
     } catch (e) {
-      util.setError(400, error.message);
-      return util.send(res);
+      util.setError(400, e.message)
+      return util.send(res)
     }
   }
 
@@ -104,8 +104,8 @@ class JournalController {
       }
       return util.send(res)
     } catch(e) {
-      util.setError(400, error.message);
-      return util.send(res);
+      util.setError(400, e.message)
+      return util.send(res)
     }
   }
 

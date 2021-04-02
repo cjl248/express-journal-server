@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import journalRoutes from './server/routes/JournalRoutes.js';
+import userRoutes from './server/routes/UserRoutes.js';
 
 config.config()
 
@@ -21,7 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const port = process.env.PORT || 8000;
 
-app.use('/api/v1/journals', journalRoutes);
+app.use('/api/v1/journals', journalRoutes)
+app.use('/api/v1/users', userRoutes)
 
 // when server boots up
 app.listen(port, () => {
