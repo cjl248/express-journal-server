@@ -14,7 +14,8 @@ class JournalService {
   static async getAnEntry(id) {
     try {
       const theEntry = await database.Journal.findOne({
-        where: { id: Number(id) }
+        where: { id: Number(id) },
+        attributes: ['id', 'title', 'content', 'date', 'count', 'UserId']
       })
       return theEntry
     } catch(e) {

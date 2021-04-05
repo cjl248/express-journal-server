@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import JournalController from '../controllers/JournalController';
 
-const router = Router()
+const journalRouter = Router({ mergeParams: true} )
 
-router.get('/', JournalController.getAllEntries)
-router.get('/:id', JournalController.getAnEntry)
-router.post('/', JournalController.addEntry)
-router.put('/:id', JournalController.updateEntry)
-router.delete('/:id', JournalController.deleteEntry)
+journalRouter.get('/', JournalController.getAllEntries)
+journalRouter.get('/:id', JournalController.getAnEntry)
+journalRouter.post('/', JournalController.addEntry)
+journalRouter.put('/:id', JournalController.updateEntry)
+journalRouter.delete('/:id', JournalController.deleteEntry)
 
-export default router
+export default journalRouter

@@ -1,15 +1,14 @@
 import { Router } from 'express';
 import UserController from '../controllers/UserController';
+import JournalRoutes from './JournalRoutes.js'
 
-const router = Router()
+const userRouter = Router()
 
-router.get('/', UserController.getAllUsers)
-router.get('/:id', UserController.getAUser)
-router.post('/', UserController.addUser)
-router.delete('/:id', UserController.deleteUser)
+userRouter.get('/', UserController.getAllUsers)
+userRouter.get('/:id', UserController.getAUser)
+userRouter.post('/', UserController.addUser)
+userRouter.delete('/:id', UserController.deleteUser)
 
-// LOGIN & LOGOUT
-// router.post('/login', UserController.login)
-// router.delete('/logout', UserController.logout)
+userRouter.use('/:UserId/journals', JournalRoutes)
 
-export default router
+export default userRouter
