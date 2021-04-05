@@ -1,15 +1,28 @@
 import JournalService from '../services/JournalService.js'
+import UserService from '../services/UserService.js'
 import Util from '../utils/Utils.js'
+import config from 'dotenv'
+import jwt from 'jsonwebtoken'
 import pry from 'pryjs'
 
-
+config.config()
 const util = new Util();
 
 class JournalController {
 
   static async getAllEntries(req, res) {
+    let token = ''
+    if (req.headers.authorization) {
+      token = req.headers.authorization.split(' ')[1]
+    }
+    const loggedIn = await JournalController.isLoggedIn(req.params.UserId, token)
+    if (!loggedIn) {
+      util.setError(401, 'Please login -- unauthorized')
+      return util.send(res)
+    }
     try {
-      const allEntries = await JournalService.getAllEntries()
+      const theUser = await UserService.getAUser(req.params.UserId)
+      const allEntries = theUser.dataValues.Journals
       if (allEntries.length > 0) {
         util.setSuccess(200, 'Entries retrieved', allEntries)
       } else {
@@ -23,6 +36,15 @@ class JournalController {
   }
 
   static async getAnEntry(req, res) {
+    let token = ''
+    if (req.headers.authorization) {
+      token = req.headers.authorization.split(' ')[1]
+    }
+    const loggedIn = await JournalController.isLoggedIn(req.params.UserId, token)
+    if (!loggedIn) {
+      util.setError(401, 'Please login -- unauthorized')
+      return util.send(res)
+    }
     const { id } = req.params
     if (!Number(id)) {
       util.setError(400, 'Please input a valid numeric value')
@@ -43,6 +65,15 @@ class JournalController {
   }
 
   static async addEntry(req, res) {
+    let token = ''
+    if (req.headers.authorization) {
+      token = req.headers.authorization.split(' ')[1]
+    }
+    const loggedIn = await JournalController.isLoggedIn(req.params.UserId, token)
+    if (!loggedIn) {
+      util.setError(401, 'Please login -- unauthenticated')
+      return util.send(res)
+    }
     if (!req.body.title || !req.body.content) {
       util.setError(400, 'Please provide complete parameters')
       return util.send(res)
@@ -51,7 +82,12 @@ class JournalController {
       const date = new Date()
       const dateOnly = date.toISOString().split('T')[0]
       const count = req.body.content.split('').length
-      const newEntry = {...req.body, count, date: dateOnly}
+      const newEntry = {
+        ...req.body,
+        count, date:
+        dateOnly,
+        UserId: req.params.UserId
+      }
       const createdEntry = await JournalService.addEntry(newEntry)
       util.setSuccess(201, 'Entry added', createdEntry)
       return util.send(res)
@@ -62,10 +98,19 @@ class JournalController {
   }
 
   static async updateEntry(req, res) {
+    let token = ''
+    if (req.headers.authorization) {
+      token = req.headers.authorization.split(' ')[1]
+    }
+    const loggedIn = await JournalController.isLoggedIn(req.params.UserId, token)
+    if (!loggedIn) {
+      util.setError(401, 'Please login -- unauthenticated')
+      return util.send(res)
+    }
     const { id } = req.params
     const alteredEntry  = req.body
     if (!Number(id)) {
-      util.setError(400, 'Please input a valid numeric value');
+      util.setError(400, 'Please input a valid numeric value')
       return util.send(res);
     }
     if (!req.body.title || !req.body.content) {
@@ -90,6 +135,15 @@ class JournalController {
   }
 
   static async deleteEntry(req, res){
+    let token = ''
+    if (req.headers.authorization) {
+      token = req.headers.authorization.split(' ')[1]
+    }
+    const loggedIn = await JournalController.isLoggedIn(req.params.UserId, token)
+    if (!loggedIn) {
+      util.setError(401, 'Please login -- unauthenticated')
+      return util.send(res)
+    }
     const { id } = req.params
     if (!Number(id)) {
       util.setError(400, 'Please provide a numeric value')
@@ -107,6 +161,13 @@ class JournalController {
       util.setError(400, e.message)
       return util.send(res)
     }
+  }
+
+  static async isLoggedIn(id, receivedToken) {
+    const theUser = await UserService.getAUser(id)
+    const JWT_KEY = process.env.JWT_KEY
+    const token = jwt.sign(theUser.dataValues.id, JWT_KEY)
+    return token === receivedToken
   }
 
 }
