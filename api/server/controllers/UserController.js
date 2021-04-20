@@ -111,26 +111,26 @@ class UserController {
   }
 
   static async login(req, res) {
-    if (!req.body.email || !req.body.password) {
-      util.setError(400, 'Email or password missing')
-      util.send(res)
-    }
     try {
-      const userToLogin = await UserService.login(req.body.email, req.body.password)
-      if (userToLogin) {
-        delete userToLogin.dataValues.password
-        const JWT_KEY = process.env.JWT_KEY
-        const token = jwt.sign(userToLogin.dataValues.id, JWT_KEY)
-        // eval(pry.it)
-        const userWithToken = {
-          ...userToLogin.dataValues,
-          token: token
-        }
-        util.setSuccess(200, 'Logged in successfully', userWithToken)
+      if (!req.body.email || !req.body.password) {
+        util.setError(400, 'Email or password missing')
+        util.send(res)
       } else {
-        util.setError(400, 'Email or password incorrect')
+        const userToLogin = await UserService.login(req.body.email, req.body.password)
+        if (userToLogin) {
+          delete userToLogin.dataValues.password
+          const JWT_KEY = process.env.JWT_KEY
+          const token = jwt.sign(userToLogin.dataValues.id, JWT_KEY)
+          const userWithToken = {
+            ...userToLogin.dataValues,
+            token: token
+          }
+          util.setSuccess(200, 'Logged in successfully', userWithToken)
+        } else {
+          util.setError(400, 'Email or password incorrect')
+        }
+        util.send(res)
       }
-      util.send(res)
     } catch(e) {
       util.setError(400, e.message)
       return util.send(res)

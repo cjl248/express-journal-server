@@ -22,7 +22,9 @@ class JournalController {
     }
     try {
       const theUser = await UserService.getAUser(req.params.UserId)
-      const allEntries = theUser.dataValues.Journals
+      const allEntries = await theUser.getJournals({
+        attributes: ['id', 'title', 'content', 'date', 'count']
+      })
       if (allEntries.length > 0) {
         util.setSuccess(200, 'Entries retrieved', allEntries)
       } else {
@@ -47,13 +49,17 @@ class JournalController {
     }
     const { id } = req.params
     if (!Number(id)) {
-      util.setError(400, 'Please input a valid numeric value')
+      util.setError(400, 'Please include a valid numeric user id')
       return util.send(res)
     }
     try {
-      const theEntry = await JournalService.getAnEntry(id)
-      if (!theEntry) {
-        util.setError(404, `Cannot find the entry with the id ${id}`)
+      const theUser = await UserService.getAUser(req.params.UserId)
+      const theEntry = await theUser.getJournals({
+        where: { id: id }
+      })
+      // const theEntry = await JournalService.getAnEntry(id)
+      if (!theEntry || theEntry.length === 0) {
+        util.setError(404, `Cannot find the entry with the id ${id} for user ${req.params.UserId}`)
       } else {
         util.setSuccess(200, 'Found entry', theEntry)
       }
