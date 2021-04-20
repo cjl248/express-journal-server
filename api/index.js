@@ -9,7 +9,9 @@ import sessionRoutes from './server/routes/SessionRoutes.js'
 
 config.config()
 
+
 const app = express()
+
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -18,8 +20,9 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json())
+app.use(bodyParser.raw())
+app.use(bodyParser.urlencoded({ extended: false }))
 
 
 const port = process.env.PORT || 8000;

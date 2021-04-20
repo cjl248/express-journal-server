@@ -8,10 +8,10 @@ class UserService {
     try {
       return await database.User.findAll({
         attributes: ['id', 'firstName', 'lastName', 'email'],
-        include: {
-          model: database.Journal,
-          attributes: ['id', 'title', 'content', 'date', 'count', 'UserId']
-        }
+        // include: {
+        //   model: database.Journal,
+        //   attributes: ['id', 'title', 'content', 'date', 'count', 'UserId']
+        // }
       })
     } catch(e) {
       throw e
@@ -23,10 +23,10 @@ class UserService {
       const theUser = await database.User.findOne({
         where: { id: Number(id) },
         attributes: ['id', 'firstName', 'lastName', 'email'],
-        include: {
-          model: database.Journal,
-          attributes: ['id', 'title', 'content', 'date', 'count', 'UserId']
-        }
+        // include: {
+        //   model: database.Journal,
+        //   attributes: ['id', 'title', 'content', 'date', 'count', 'UserId']
+        // }
       })
       return theUser
     } catch(e) {
